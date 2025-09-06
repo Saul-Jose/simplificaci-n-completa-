@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Completa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        h1, h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="text"], input[type="number"], input[type="radio"] {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .divisor-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .divisor-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .divisor-option:hover {
+            background: #f8f9fa;
+        }
+
+        .divisor-option.selected {
+            border-color: #4CAF50;
+            background: #e8f5e8;
+        }
+
+        .divisor-option input[type="radio"] {
+            margin: 0;
+            padding: 0;
+            width: auto;
+        }
+
+        .divisor-custom {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .decimal-limitador {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .limitador-input {
+            width: 100% !important;
+        }
+
+        .auto-add-note {
+            background-color: #fff3e0;
+            color: #e65100;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .decimal-display {
+            font-family: monospace;
+            font-size: 18px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            word-break: break-all;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.6;
+            margin: 10px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-width: 100%;
+        }
+
+        .highlighted-digit {
+            color: white;
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 3px;
+            margin: 0 1px;
+        }
+
+        .highlight-1 { background-color: #ff5722; }
+        .highlight-2 { background-color: #3f51b5; }
+        .highlight-3 { background-color: #4caf50; }
+        .highlight-4 { background-color: #9c27b0; }
+
+        .position-searchers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .searcher-item {
+            text-align: center;
+        }
+
+        .searcher-item label {
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .searcher-item input {
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .searcher-1 { border-color: #ff5722; }
+        .searcher-1 label { color: #ff5722; }
+
+        .searcher-2 { border-color: #3f51b5; }
+        .searcher-2 label { color: #3f51b5; }
+
+        .searcher-3 { border-color: #4caf50; }
+        .searcher-3 label { color: #4caf50; }
+
+        .searcher-4 { border-color: #9c27b0; }
+        .searcher-4 label { color: #9c27b0; }
+
+        .simplificacion-resultado {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .simplificacion-item {
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 3px;
+        }
+
+        .categoria {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .calculation {
+            font-family: monospace;
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+        
+        .nf {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .nr {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        
+        .parte {
+            border: 3px solid #ddd;
+            border-radius: 10px;
+        }
+        
+        .parte1 {
+            border-color: #4CAF50;
+        }
+        
+        .parte2 {
+            border-color: #2196F3;
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                margin: 20px auto;
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .decimal-limitador {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .position-searchers {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .decimal-display {
+                font-size: 14px;
+                padding: 10px;
+                word-break: break-all;
+                overflow-x: auto;
+                max-width: calc(100vw - 80px);
+            }
+            
+            .calculation {
+                font-size: 14px;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        
+        .container * {
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- PARTE 1: Calculadora Simple -->
+    <div class="container parte parte1" id="parte1">
+        <h1>PARTE 1 - Calculadora Simple</h1>
+        
+        <div class="input-group">
+            <label for="numeros">Números a sumar (ejemplo: 1+2+3):</label>
+            <input type="text" id="numeros" placeholder="1+2+3">
+            <div class="auto-add-note">
+                <strong>Nota:</strong> Automáticamente se agregará +25 a tu suma
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label>Seleccionar divisor:</label>
+            <div class="divisor-options">
+                <div class="divisor-option selected" onclick="selectDivisor(this, 1220)">
+                    <input type="radio" name="divisor" value="1220" checked>
+                    <span>Usar divisor 1220</span>
+                </div>
+                <div class="divisor-option" onclick="selectDivisor(this, 'custom')">
+                    <div class="divisor-custom">
+                        <input type="radio" name="divisor" value="custom">
+                        <input type="number" id="customDivisor" placeholder="Ingresa tu divisor personalizado" min="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Limitador de decimal y decimal generado:</label>
+            <div class="decimal-limitador">
+                <input type="text" id="decimalGenerado" placeholder="Se generará automáticamente..." readonly style="background: #f8f9fa;">
+                <input type="number" id="limitadorDecimal" placeholder="10" value="10" min="1" max="150" class="limitador-input">
+            </div>
+            <small style="color: #666; margin-top: 5px; display: block;">El número de la derecha limita cuántos dígitos decimales mostrar (1-150)</small>
+        </div>
+        
+        <button onclick="calcularParte1()">Calcular y Continuar a Parte 2</button>
+        
+        <div id="resultado1" class="result" style="display: none;">
+            <h3>Resultado Parte 1:</h3>
+            <div id="calculo1" class="calculation"></div>
+            <div id="division1" class="calculation"></div>
+            
+            <div class="input-group">
+                <label>Decimal con resaltado por posición:</label>
+                <div id="decimalDisplay" class="decimal-display"></div>
+                
+                <div class="position-searchers">
+                    <div class="searcher-item">
+                        <label>Posición 1:</label>
+                        <input type="number" id="pos1" class="searcher-1" min="1" placeholder="Pos" onchange="highlightPositions()">
+                    </div>
+                    <div class="searcher-item">
+                        <label>Posición 2:</label>
+                        <input type="number" id="pos2" class="searcher-2" min="1" placeholder="Pos" onchange="highlightPositions()">
+                    </div>
+                    <div class="searcher-item">
+                        <label>Posición 3:</label>
+                        <input type="number" id="pos3" class="searcher-3" min="1" placeholder="Pos" onchange="highlightPositions()">
+                    </div>
+                    <div class="searcher-item">
+                        <label>Posición 4:</label>
+                        <input type="number" id="pos4" class="searcher-4" min="1" placeholder="Pos" onchange="highlightPositions()">
+                    </div>
+                </div>
+                
+                <!-- Nuevo sistema de simplificación -->
+                <div id="simplificacionResultado" class="simplificacion-resultado" style="display: none;">
+                    <h4>Sistema de Simplificación de Renglones:</h4>
+                    <div id="simplificacionContent"></div>
+                </div>
+                
+                <small style="color: #666; margin-top: 10px; display: block;">
+                    Ingresa números de posición para resaltar dígitos específicos en el decimal y generar simplificaciones automáticas.
+                </small>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        let divisorActual = 1220;
+        let decimalActual = '';
+
+        function selectDivisor(element, divisor) {
+            document.querySelectorAll('.divisor-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+            
+            if (divisor === 'custom') {
+                const customInput = document.getElementById('customDivisor');
+                customInput.focus();
+                customInput.addEventListener('input', function() {
+                    divisorActual = parseInt(this.value) || 1220;
+                    if (document.getElementById('numeros').value.trim()) {
+                        calcularParte1();
+                    }
+                });
+                divisorActual = parseInt(customInput.value) || 1220;
+            } else {
+                divisorActual = divisor;
+            }
+            
+            if (document.getElementById('numeros').value.trim()) {
+                calcularParte1();
+            }
+        }
+
+        function calcularDivisionPrecisa(dividendo, divisor, cifrasDeseadas) {
+            let parteEntera = Math.floor(dividendo / divisor);
+            let resto = dividendo - (parteEntera * divisor);
+            
+            let decimales = '';
+            let visitados = new Map();
+            
+            for (let i = 0; i < cifrasDeseadas && resto !== 0; i++) {
+                resto *= 10;
+                
+                if (visitados.has(resto)) {
+                    break;
+                }
+                visitados.set(resto, i);
+                
+                let digito = Math.floor(resto / divisor);
+                decimales += digito;
+                resto = resto - (digito * divisor);
+            }
+            
+            if (decimales === '') {
+                decimales = '0';
+            }
+            
+            while (decimales.length < cifrasDeseadas) {
+                decimales += '0';
+            }
+            
+            return parteEntera + '.' + decimales;
+        }
+
+        function simplificarNumero(numero) {
+            let pasos = [];
+            let actual = numero;
+            
+            while (actual >= 10) {
+                let digitos = actual.toString().split('');
+                let suma = digitos.reduce((acc, d) => acc + parseInt(d), 0);
+                pasos.push({
+                    original: actual,
+                    operacion: digitos.join('+'),
+                    resultado: suma
+                });
+                actual = suma;
+            }
+            
+            return {
+                pasos: pasos,
+                resultado_final: actual
+            };
+        }
+
+        function procesarSimplificaciones() {
+            const pos1 = parseInt(document.getElementById('pos1').value);
+            const pos2 = parseInt(document.getElementById('pos2').value);
+            const pos3 = parseInt(document.getElementById('pos3').value);
+            const pos4 = parseInt(document.getElementById('pos4').value);
+            
+            if (!pos1 || !pos2 || !pos3 || !pos4) return;
+            
+            const posiciones = [pos1, pos2, pos3, pos4].sort((a, b) => a - b);
+            const decimal = decimalActual.replace('.', '');
+            
+            // Calcular resaltados (r)
+            const resaltados = posiciones.map(pos => {
+                if (pos === 1) return decimal[0] || '0';
+                return decimal[pos - 1] || '0';
+            }).join('');
+            
+            const rSuma = resaltados.split('').reduce((acc, d) => acc + parseInt(d), 0);
+            const rSimplificado = simplificarNumero(rSuma);
+            
+            let resultadoHTML = '<div class="simplificacion-item">';
+            resultadoHTML += `<span class="categoria">r:</span> ${resaltados} → ${resaltados.split('').join('+')} = ${rSuma}`;
+            
+            if (rSimplificado.pasos.length > 0) {
+                let etiquetas = ['s'];
+                if (rSimplificado.pasos.length > 1) {
+                    for (let i = 1; i < rSimplificado.pasos.length - 1; i++) {
+                        etiquetas.push('s'.repeat(i + 1));
+                    }
+                    etiquetas.push('ms');
+                } else {
+                    etiquetas = ['ms'];
+                }
+                
+                rSimplificado.pasos.forEach((paso, i) => {
+                    resultadoHTML += ` → ${paso.resultado}${etiquetas[i] || ''}`;
+                });
+            }
+            resultadoHTML += '</div>';
+            
+            // Obtener renglones entre posiciones (excluyendo los resaltados)
+            const categorias = ['ep', 'em', 'el'];
+            let categoriaIndex = 0;
+            
+            for (let i = 0; i < posiciones.length - 1; i++) {
+                let inicio = posiciones[i] + 1; // Después del resaltado
+                let fin = posiciones[i + 1] - 1; // Antes del siguiente resaltado
+                
+                if (inicio <= fin) {
+                    let numeros = '';
+                    for (let j = inicio; j <= fin; j++) {
+                        if (j === 1) continue; // Saltar posición 1 (el "0")
+                        const indice = j - 1; // Convertir posición a índice
+                        if (indice >= 0 && indice < decimal.length) {
+                            numeros += decimal[indice];
+                        }
+                    }
+                    
+                    if (numeros) {
+                        const suma = numeros.split('').reduce((acc, d) => acc + parseInt(d), 0);
+                        const simplificado = simplificarNumero(suma);
+                        
+                        // Usar ep para todos si hay coincidencias, sino usar categorías normales
+                        const categoria = categoriaIndex < categorias.length ? categorias[Math.min(categoriaIndex, 0)] : 'ep';
+                        
+                        resultadoHTML += '<div class="simplificacion-item">';
+                        resultadoHTML += `<span class="categoria">${categoria}:</span> ${numeros} → ${numeros.split('').join('+')} = ${suma}`;
+                        
+                        if (simplificado.pasos.length > 0) {
+                            let etiquetas = ['s'];
+                            if (simplificado.pasos.length > 1) {
+                                for (let j = 1; j < simplificado.pasos.length - 1; j++) {
+                                    etiquetas.push('s'.repeat(j + 1));
+                                }
+                                etiquetas.push('ms');
+                            } else {
+                                etiquetas = ['ms'];
+                            }
+                            
+                            simplificado.pasos.forEach((paso, j) => {
+                                resultadoHTML += ` → ${paso.resultado}${etiquetas[j] || ''}`;
+                            });
+                        } else {
+                            resultadoHTML += ' ms';
+                        }
+                        resultadoHTML += '</div>';
+                        
+                        categoriaIndex++;
+                    }
+                }
+            }
+            
+            document.getElementById('simplificacionContent').innerHTML = resultadoHTML;
+            document.getElementById('simplificacionResultado').style.display = 'block';
+        }
+
+        function highlightPositions() {
+            if (!decimalActual) return;
+            
+            const pos1 = parseInt(document.getElementById('pos1').value);
+            const pos2 = parseInt(document.getElementById('pos2').value);
+            const pos3 = parseInt(document.getElementById('pos3').value);
+            const pos4 = parseInt(document.getElementById('pos4').value);
+            
+            let resultado = '';
+            const decimal = decimalActual.toString();
+            
+            for (let i = 0; i < decimal.length; i++) {
+                const char = decimal[i];
+                
+                if (char === '.') {
+                    resultado += char;
+                    continue;
+                }
+                
+                let posicion;
+                if (i === 0) {
+                    posicion = 1;
+                } else {
+                    posicion = i;
+                }
+                
+                let claseResaltado = '';
+                if (posicion === pos1) claseResaltado = 'highlight-1';
+                else if (posicion === pos2) claseResaltado = 'highlight-2';
+                else if (posicion === pos3) claseResaltado = 'highlight-3';
+                else if (posicion === pos4) claseResaltado = 'highlight-4';
+                
+                if (claseResaltado) {
+                    resultado += `<span class="highlighted-digit ${claseResaltado}">${char}</span>`;
+                } else {
+                    resultado += char;
+                }
+            }
+            
+            document.getElementById('decimalDisplay').innerHTML = resultado;
+            
+            // Procesar simplificaciones si hay al menos 2 posiciones
+            if ([pos1, pos2, pos3, pos4].filter(p => p).length >= 2) {
+                procesarSimplificaciones();
+            }
+        }
+
+        function calcularParte1() {
+            const numeros = document.getElementById('numeros').value;
+            const resultado1 = document.getElementById('resultado1');
+            const calculo1 = document.getElementById('calculo1');
+            const division1 = document.getElementById('division1');
+            const decimalGenerado = document.getElementById('decimalGenerado');
+
+            try {
+                const nums = numeros.match(/\d+/g);
+                if (!nums || nums.length === 0) {
+                    throw new Error('Debes ingresar números válidos');
+                }
+
+                let suma = 0;
+                let operacion = '';
+                
+                for (let i = 0; i < nums.length; i++) {
+                    suma += parseInt(nums[i]);
+                    operacion += nums[i];
+                    if (i < nums.length - 1) operacion += ' + ';
+                }
+
+                suma += 25;
+                operacion += ' + 25';
+
+                calculo1.innerHTML = `<strong>Suma:</strong> ${operacion} = ${suma}`;
+
+                const limitador = parseInt(document.getElementById('limitadorDecimal').value) || 10;
+                const decimal = calcularDivisionPrecisa(suma, divisorActual, limitador);
+                
+                division1.innerHTML = `<strong>División:</strong> ${suma} ÷ ${divisorActual} = ${decimal}`;
+                decimalGenerado.value = decimal;
+                decimalActual = decimal;
+
+                document.getElementById('decimalDisplay').textContent = decimal;
+                highlightPositions();
+
+                document.getElementById('resultado1').style.display = 'block';
+
+            } catch (error) {
+                calculo1.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                division1.innerHTML = '';
+                decimalGenerado.value = '';
+                resultado1.style.display = 'block';
+            }
+        }
+
+
+        
+        document.getElementById('limitadorDecimal').addEventListener('input', () => {
+            if (document.getElementById('numeros').value.trim()) {
+                calcularParte1();
+            }
+        });
+
+        document.getElementById('numeros').addEventListener('input', () => {
+            calcularParte1();
+        });
+    </script>
+</body>
+</html>
